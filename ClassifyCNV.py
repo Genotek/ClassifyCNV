@@ -613,12 +613,12 @@ def analyze_intragenic_deletions(dosage_sensitive_cnv):
 
 
 def assign_points_intragenic_del_2e(pvs1_list):
-    """Assigns points for section 2E of gene loss rubric
+    """Assigns points for section 2E of gene loss rubric.
     Args:
-        pvs1_list: a list of deletions that are known to cause frameshift and NMD
+        pvs1_list: A list of deletions that are known to cause frameshift and NMD.
 
     Returns:
-        Modifies the detailed_results dictionary by adding points for section 2E
+        Modifies the detailed_results dictionary by adding points for section 2E.
 
     """
     for variant in pvs1_list:
@@ -678,7 +678,6 @@ def assign_HI_predictor_points():
         Modifies the global detailed_results dictionary.
 
     """
-
     # load a set of genes that are predicted to be haploinsufficient by both gnomAD and DECIPHER
     predicted_hi_genes = load_dosage_predictors()
 
@@ -809,7 +808,6 @@ def rename_directory():
         Renames the results directory.
 
     """
-
     new_output_path = os.path.join(home_dir, main_results_folder, args.outdir)
     # check if the specified directory already exists; if so - copy files over to this directory
     if os.path.isdir(new_output_path):
@@ -829,7 +827,6 @@ def rename_directory():
         except OSError:
             print('Incorrect folder name, results are in', path_to_results)
             sys.exit(1)
-
 
 
 if __name__ == "__main__":
@@ -870,7 +867,3 @@ if __name__ == "__main__":
     else:
         print('Results saved to', path_to_results + '/')
     print('Elapsed time:', '{0:.2f}'.format(t_fact), 'seconds')
-
-
-
-
