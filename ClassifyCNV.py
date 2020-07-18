@@ -540,7 +540,7 @@ def analyze_intragenic_deletions(dosage_sensitive_cnv):
     # load coordinates of the 3'-most 50 bp for the penultimate exon for each transcript
     # a gene is not expected to undergo NMD if only the last exon and/or this region are deleted
     nmd_coords_check = dict()  # contains the start and end of the 3' 50bp of second to last exon for each transcript
-    nmd_path = os.path.join(main_resources_folder, args.GenomeBuild, penultimate_exon_50bp_db)
+    nmd_path = os.path.join(home_dir, main_resources_folder, args.GenomeBuild, penultimate_exon_50bp_db)
     nmd_in = open(nmd_path, 'r')
     for region in nmd_in:
         parts = region.strip().split()
@@ -867,4 +867,3 @@ if __name__ == "__main__":
     else:
         print('Results saved to', path_to_results + '/')
     print('Elapsed time:', '{0:.2f}'.format(t_fact), 'seconds')
-    
