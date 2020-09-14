@@ -26,7 +26,7 @@ Both hg19 and hg38 coordinates are supported.
 ### **Running the program**
 
 Before running ClassifyCNV it is recommended that the ClinGen files are updated by executing
-update_clingen.sh
+```update_clingen.sh```
 
 Command to run ClassifyCNV:
 ```
@@ -61,8 +61,8 @@ The last two columns of the file include a list of dosage-sensitive genes contai
 
 ### **Citation**
 
-If you use the software, please cite:
-
+If you use the software, please cite:  
+Gurbich TA, Ilinsky VV. 2020. ClassifyCNV: a tool for clinical annotation of copy-number variants. bioRxiv doi: 10.1101/2020.07.20.213215  
 
 ### **License**
 
