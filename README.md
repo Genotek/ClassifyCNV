@@ -1,8 +1,10 @@
 ## **ClassifyCNV**
 
-ClassifyCNV is a tool that implements the 2019 ACMG guidelines to evaluate the pathogenicity of
+ClassifyCNV is a command-line tool that implements the 2019 ACMG guidelines to evaluate the pathogenicity of
 germline duplications and deletions. 
 
+The tool uses pre-parsed publicly available databases to calculate a pathogenicity score for each copy-number variant 
+(CNV) in accordance with the ACMG guidelines.  
 
 ### **Requirements**
 
@@ -45,10 +47,15 @@ Optional parameters:
 
 Sample datasets and a sample scoresheet are included in the Examples folder. 
 
+Run ClassifyCNV on a sample dataset:
+```
+python3 ClassifyCNV.py --infile Examples/ACMG_examples.hg19.bed --GenomeBuild hg19 --precise 
+```
+
 ### **Results**
 
-Results are saved to the run-specific folder inside the ClassifyCNV_results folder.
-The run-specific folder is named Result_dd_Mon_yyyy-hh-mm-ss.
+Results are saved to the run-specific folder inside the ```ClassifyCNV_results``` folder.
+The run-specific folder is named ```Result_dd_Mon_yyyy-hh-mm-ss```, unless the user specified a different folder name.
 The filled out table with the scores and the final classification 
 of each CNV is named Scoresheet.txt. The column names correspond
 to the section numbers of the ACMG rubrics available here:
@@ -57,11 +64,25 @@ http://cnvcalc.clinicalgenome.org/cnvcalc/cnv-loss
 
 http://cnvcalc.clinicalgenome.org/cnvcalc/cnv-gain
 
+The numeric pathogenicity score, calculated by ClassifyCNV, is converted to pathogenicity classification using the 
+following cutoffs:  
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≤ −0.99: &nbsp;&nbsp;&nbsp;&nbsp; benign variant  
+−0.90 .. −0.98: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;likely benign variant  
+&nbsp;&nbsp;−0.89 .. 0.89: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;variant of uncertain significance  
+&nbsp;&nbsp;&nbsp;&nbsp;0.90 .. 0.98: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;likely pathogenic variant  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≥ 0.99: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pathogenic variant
+
+
+
+
 The last two columns of the file include a list of dosage-sensitive genes contained within the CNV and a list of all protein coding genes in the CNV.
+
 
 ### **Citation**
 
 If you use the software, please cite:  
+
 Gurbich TA, Ilinsky VV. 2020. ClassifyCNV: a tool for clinical annotation of copy-number variants. bioRxiv doi: 10.1101/2020.07.20.213215  
 
 ### **License**
