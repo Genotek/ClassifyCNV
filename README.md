@@ -67,14 +67,11 @@ http://cnvcalc.clinicalgenome.org/cnvcalc/cnv-gain
 The numeric pathogenicity score, calculated by ClassifyCNV, is converted to pathogenicity classification using the 
 following cutoffs:  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≤ −0.99: &nbsp;&nbsp;&nbsp;&nbsp; benign variant  
-−0.90 .. −0.98: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;likely benign variant  
-&nbsp;&nbsp;−0.89 .. 0.89: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;variant of uncertain significance  
-&nbsp;&nbsp;&nbsp;&nbsp;0.90 .. 0.98: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;likely pathogenic variant  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≥ 0.99: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pathogenic variant
-
-
-
+```≤ −0.99```: &nbsp;&nbsp;benign variant  
+```−0.90 .. −0.98```: &nbsp;&nbsp;likely benign variant  
+```−0.89 .. 0.89```: &nbsp;&nbsp;variant of uncertain significance  
+```0.90 .. 0.98```: &nbsp;&nbsp;likely pathogenic variant  
+```≥ 0.99```: &nbsp;&nbsp;pathogenic variant
 
 The last two columns of the file include a list of dosage-sensitive genes contained within the CNV and a list of all protein coding genes in the CNV.
 
