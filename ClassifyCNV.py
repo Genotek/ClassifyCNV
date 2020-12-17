@@ -10,7 +10,7 @@ import time
 import shutil
 
 
-__version__ = '1.0'
+__version__ = '1.0.1'
 
 parser = argparse.ArgumentParser()
 
@@ -360,7 +360,7 @@ def parse_established_regions(results_dict, cnv_type, file_regions, effect_colum
                     else:
                         results_dict[cnv_id] = {}
                         results_dict[cnv_id]['benign_smaller'] = [region_coords]
-                # check it is larger than the benign region
+                # check if it is larger than the benign region
                 elif int(fields[1]) <= int(fields[5]) and int(fields[2]) >= int(fields[6]):
                     if cnv_id in results_dict:
                         if 'benign_larger' in results_dict[cnv_id]:
@@ -470,7 +470,7 @@ def assign_dup_points_s2(results):
                 if gene not in benign_list:
                     tracker = 1
             if tracker == 0:
-                detailed_results[cnv]['2F'] = -0.9
+                detailed_results[cnv]['2F'] = -1.0
 
 
 def assign_del_points_s2(results):
@@ -622,12 +622,12 @@ def assign_points_intragenic_del_2e(pvs1_list):
 
     """
     for variant in pvs1_list:
-        detailed_results[variant]['2E'] = 0.90
+        detailed_results[variant]['2E'] = 0.9
 
     # check if there are any dosage-sensitive genes that were deleted entirely and assign points
     for variant in breakpoints:
         if breakpoints[variant] == 2:
-            detailed_results[variant]['2E'] = 0.90
+            detailed_results[variant]['2E'] = 0.9
 
 
 def dosage_sensitivity():
@@ -689,8 +689,8 @@ def assign_HI_predictor_points():
                 if test_cnv in sensitive_genes:
                     if test_gene in sensitive_genes[test_cnv]:
                         continue
-                # don't evaluate if we already assigned points for an internal variant
-                if detailed_results[test_cnv]['2E'] > 0:
+                # don't evaluate if we already assigned points for an internal or an established benign variant
+                if detailed_results[test_cnv]['2E'] > 0 or detailed_results[test_cnv]['2F'] < 0:
                     continue
                 if test_gene in predicted_hi_genes:  # check the gene is in the predicted HI list
                     detailed_results[test_cnv]['2H'] = 0.15
@@ -724,7 +724,7 @@ def analyze_pop_freqs():
 
             # don't analyze these data for CNVs that overlap known or predicted dosage sensitive regions
             if max(detailed_results[cnv_id]['2A'], detailed_results[cnv_id]['2C'], detailed_results[cnv_id]['2D'],
-                   detailed_results[cnv_id]['2H']) > 0:
+                   detailed_results[cnv_id]['2E'], detailed_results[cnv_id]['2H']) > 0:
                 continue
 
             overlap_perc = int(fields[9]) * 100 / (int(fields[2]) - int(fields[1]))
@@ -744,12 +744,12 @@ def analyze_pop_freqs():
         # if there was only one pop frequency variant match, use its frequency
         if len(pop_freqs_res[cnv_id]) == 1:
             if pop_freqs_res[cnv_id][0] > 1.0:
-                detailed_results[cnv_id]['4O'] = -0.9
+                detailed_results[cnv_id]['4O'] = -1.0
         # if there are more than 1 pop frequency variant overlaps, take the average of frequencies of all overlaps
         else:
             average = sum(pop_freqs_res[cnv_id])/len(pop_freqs_res[cnv_id])
             if average > 1.0:
-                detailed_results[cnv_id]['4O'] = -0.9
+                detailed_results[cnv_id]['4O'] = -1.0
 
 
 def generate_results():
