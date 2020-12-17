@@ -58,7 +58,7 @@ Results are saved to the run-specific folder inside the ```ClassifyCNV_results``
 The run-specific folder is named ```Result_dd_Mon_yyyy-hh-mm-ss```, unless the user specified a different folder name.
 The filled out table with the scores and the final classification 
 of each CNV is named Scoresheet.txt. The column names correspond
-to the section numbers of the ACMG rubrics available here:
+to the evidence fields of the ACMG rubrics available here:
 
 http://cnvcalc.clinicalgenome.org/cnvcalc/cnv-loss
 
@@ -80,7 +80,7 @@ The last two columns of the file include a list of dosage-sensitive genes contai
 
 If you use the software, please cite:  
 
-Gurbich TA, Ilinsky VV. 2020. ClassifyCNV: a tool for clinical annotation of copy-number variants. bioRxiv doi: 10.1101/2020.07.20.213215  
+Gurbich, T.A., Ilinsky, V.V. ClassifyCNV: a tool for clinical annotation of copy-number variants. Sci Rep 10, 20375 (2020). https://doi.org/10.1038/s41598-020-76425-3
 
 ### **License**
 
