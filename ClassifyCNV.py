@@ -192,7 +192,7 @@ def genes_promoters_enhancers_intersect():
     # after we assembled the results from all 3 databases, assign points for section 1 (did anything overlap each CNV?)
     for cnv in cnv_list:
         if cnv not in element_counter:
-            detailed_results[cnv]['1'] = -0.6
+            detailed_results[cnv]['1A-B'] = -0.6
 
 
 def assign_section3_points(gene_number, cnv_type):
