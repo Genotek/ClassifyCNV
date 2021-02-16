@@ -9,12 +9,11 @@ The script parses a ClinGen tsv file that contains dosage sensitive regions
 The output is two bed files, one for haploinsufficient regions and one for triplosensitive regions
 """
 parser = argparse.ArgumentParser()
-parser.add_argument('--infile', help='Input file in bed format; the first four columns should be chromosome, '
-                                     'start position, end position, CNV type (DEL or DUP)')
+parser.add_argument('--infile', help='Input file in tsv format, downloaded from ClinGen;')
 args = parser.parse_args()
 
 if args.infile.endswith('tsv'):
-    outfile_hi =  args.infile.replace('tsv', 'HI.bed')
+    outfile_hi = args.infile.replace('tsv', 'HI.bed')
     outfile_ts = args.infile.replace('tsv', 'TS.bed')
 else:
     sys.exit('The file is not in the tsv format\n')
@@ -34,8 +33,8 @@ for line in infile:
             # if the score field is not empty, print to file
             if fields[4]:
                 hi_out.write('{}\t{}\t{}\t{}\n'.format(chr, start.strip(), end.strip(), fields[4]))
-            if fields[9]:
-                ts_out.write('{}\t{}\t{}\t{}\n'.format(chr, start.strip(), end.strip(), fields[9]))
+            if fields[12]:
+                ts_out.write('{}\t{}\t{}\t{}\n'.format(chr, start.strip(), end.strip(), fields[12]))
 
 infile.close()
 hi_out.close()
