@@ -41,13 +41,13 @@ def make_results_folder():
             sys.exit(1)
     # make the results folder for this run
     try:
-        os.mkdir(path_to_results)
+        os.makedirs(path_to_results, exist_ok = True)
     except OSError:
         print('Cannot create results folder', path_to_results)
         sys.exit(1)
     # make the intermediate folder where the technical files will be saved to
     try:
-        os.mkdir(path_to_intermediate)
+        os.makedirs(path_to_intermediate, exist_ok = True)
     except OSError:
         print('Cannot create intermediate results folder', path_to_intermediate)
         sys.exit(1)
