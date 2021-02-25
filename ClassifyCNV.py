@@ -35,7 +35,7 @@ def make_results_folder():
     # if not, create it before proceeding
     if not os.path.isdir(os.path.join(home_dir, main_results_folder)):
         try:
-            os.mkdir(os.path.join(home_dir, main_results_folder))
+            os.makedirs(os.path.join(home_dir, main_results_folder), exist_ok = True)
         except OSError:
             print('Cannot create main results folder', main_results_folder)
             sys.exit(1)
