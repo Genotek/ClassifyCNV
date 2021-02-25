@@ -5,6 +5,7 @@
 This module contains a list of resources used by the pipeline
 """
 
+import tempfile
 import os
 import sys
 from datetime import datetime
@@ -14,7 +15,11 @@ from collections import OrderedDict
 home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))  # directory where the script is actually located
 run_origin_dir = os.path.abspath(os.getcwd())  # directory where the script is run from
 main_results_folder = 'ClassifyCNV_results'
-run_folder_prefix = 'Result_'
+# Parent directory must exist for before creating temp directory
+os.makedirs(os.path.join(home_dir, main_results_folder), exist_ok = True)
+intermediate_tempf_directory = tempfile.mkdtemp(dir = os.path.join(home_dir, main_results_folder))
+tmp_dir_hash =  os.path.basename(intermediate_tempf_directory)
+run_folder_prefix = os.path.join(tmp_dir_hash, 'Result_')
 run_results_folder = run_folder_prefix + datetime.now().strftime("%d-%b-%Y-%H-%M-%S")
 path_to_results = os.path.join(home_dir, main_results_folder, run_results_folder)
 intermediate_folder = 'Intermediate_files'
