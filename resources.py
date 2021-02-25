@@ -9,21 +9,21 @@ import os
 import sys
 from datetime import datetime
 from collections import OrderedDict
+import random
+import string
 
-# Results path
+# Default results path
 home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))  # directory where the script is actually located
-run_origin_dir = os.path.abspath(os.getcwd())  # directory where the script is run from
 main_results_folder = 'ClassifyCNV_results'
 run_folder_prefix = 'Result_'
-run_results_folder = run_folder_prefix + datetime.now().strftime("%d-%b-%Y-%H-%M-%S")
-path_to_results = os.path.join(home_dir, main_results_folder, run_results_folder)
+random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+run_results_folder = run_folder_prefix + datetime.now().strftime("%d-%b-%Y-%H-%M-%S-") + random_string
+default_results_folder = os.path.join(main_results_folder, run_results_folder)
 intermediate_folder = 'Intermediate_files'
-path_to_intermediate = os.path.join(path_to_results, intermediate_folder)
-
 
 # Filename for the cleaned input
 cleaned_bed = 'infile.cleaned.bed'
-cleaned_bed_path = os.path.join(path_to_intermediate, cleaned_bed)
+cleaned_bed_path = os.path.join(intermediate_folder, cleaned_bed)
 
 # Resources and databases
 main_resources_folder = 'Resources'
@@ -57,16 +57,15 @@ clingen_regions_ts_intersect = 'clingen_regions_ts_intersect.bed'
 gene_features_intersect = 'gene_features_intersect.bed'
 pop_freqs_intersect = 'population_freqs_intersect.bed'
 
-refgenes_intersect_path = os.path.join(path_to_intermediate, refgenes_intersect)
-promoters_intersect_path = os.path.join(path_to_intermediate, promoters_intersect)
-enhancers_intersect_path = os.path.join(path_to_intermediate, enhancers_intersect)
-clingen_hi_intersect_path = os.path.join(path_to_intermediate, clingen_hi_intersect)
-clingen_ts_intersect_path = os.path.join(path_to_intermediate, clingen_ts_intersect)
-clingen_regions_hi_intersect_path = os.path.join(path_to_intermediate, clingen_regions_hi_intersect)
-clingen_regions_ts_intersect_path = os.path.join(path_to_intermediate, clingen_regions_ts_intersect)
-gene_features_intersect_path = os.path.join(path_to_intermediate, gene_features_intersect)
-pop_freqs_intersect_path = os.path.join(path_to_intermediate, pop_freqs_intersect)
-
+refgenes_intersect_path = os.path.join(intermediate_folder, refgenes_intersect)
+promoters_intersect_path = os.path.join(intermediate_folder, promoters_intersect)
+enhancers_intersect_path = os.path.join(intermediate_folder, enhancers_intersect)
+clingen_hi_intersect_path = os.path.join(intermediate_folder, clingen_hi_intersect)
+clingen_ts_intersect_path = os.path.join(intermediate_folder, clingen_ts_intersect)
+clingen_regions_hi_intersect_path = os.path.join(intermediate_folder, clingen_regions_hi_intersect)
+clingen_regions_ts_intersect_path = os.path.join(intermediate_folder, clingen_regions_ts_intersect)
+gene_features_intersect_path = os.path.join(intermediate_folder, gene_features_intersect)
+pop_freqs_intersect_path = os.path.join(intermediate_folder, pop_freqs_intersect)
 
 databases = {
     'genes': {'source': refgenes_db, 'result_path': refgenes_intersect_path},
@@ -89,7 +88,6 @@ rubric = OrderedDict([
 
 # Printed results
 scoresheet_filename = 'Scoresheet.txt'
-scoresheet = os.path.join(path_to_results, scoresheet_filename)
 scoresheet_header = '\t'.join(['VariantID', 'Chromosome', 'Start', 'End', 'Type', 'Classification', 'Total score']) + '\t'
 scoresheet_header += '\t'.join(rubric.keys()) + '\t' + 'Known or predicted dosage-sensitive genes' + \
                      '\t' + 'All protein coding genes'

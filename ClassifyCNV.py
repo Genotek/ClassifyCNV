@@ -7,50 +7,43 @@ from subprocess import Popen
 import copy
 from multiprocessing import Pool
 import time
-import shutil
 
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--infile', required=True, help='Input file in BED format; the first four columns should be '
-                                                    'chromosome, start position, end position, CNV type (DEL or DUP).')
-parser.add_argument('--GenomeBuild', required=True, choices=['hg19', 'hg38'], help='Human assembly version '
-                                                                                   '(hg19 or hg38).')
+parser.add_argument('--infile', required=True,
+                    help='Input file in BED format; the first four columns should be chromosome, start position, '
+                         'end position, CNV type (DEL or DUP).')
+parser.add_argument('--GenomeBuild', required=True, choices=['hg19', 'hg38'],
+                    help='Human assembly version (hg19 or hg38).')
 parser.add_argument('--cores', type=int, default=1, help='Maximum number of threads to use. Default: 1')
-parser.add_argument('--precise', action='store_true', help='Specify this flag if the CNV breakpoints '
-                                                           'are precise. WARNING: if the breakpoints are not precise, '
-                                                           'specifying the flag could lead to incorrect results. '
-                                                           'Default = False')
-parser.add_argument('--outdir', help='Specify the name for the run output directory that will be created inside the'
-                                    'ClassifyCNV_results folder. The default name is Result_dd_Mon_yyyy-hh-mm-ss')
+parser.add_argument('--precise', action='store_true',
+                    help='Specify this flag if the CNV breakpoints are precise. WARNING: if the breakpoints are not '
+                         'precise, specifying the flag could lead to incorrect results. Default = False')
+parser.add_argument('--outdir', default=default_results_folder,
+                    help='Specify path to the run output directory. If no output directory is provided, results will '
+                         'be saved to ClassifyCNV_results/Result_dd_Mon_yyyy-hh-mm-ss-{random}')
 args = parser.parse_args()
 
 
 def make_results_folder():
-    """Creates a directory where all results and technical files will be saved to.
+    """Creates a directory where all results and technical files will be saved to if it doesn't already exist.
     """
-    # check if the main results folder already exists
+    # check if the main results folder already exists and if it is empty
     # if not, create it before proceeding
-    if not os.path.isdir(os.path.join(home_dir, main_results_folder)):
-        try:
-            os.mkdir(os.path.join(home_dir, main_results_folder))
-        except OSError:
-            print('Cannot create main results folder', main_results_folder)
-            sys.exit(1)
-    # make the results folder for this run
-    try:
-        os.mkdir(path_to_results)
-    except OSError:
-        print('Cannot create results folder', path_to_results)
-        sys.exit(1)
+    if os.path.isdir(args.outdir):
+        assert not os.listdir(args.outdir), "Results directory is not empty"
+    else:
+        if args.outdir == default_results_folder:
+            os.makedirs(args.outdir)
+        else:
+            os.mkdir(args.outdir)
+    # change to the results directory
+    os.chdir(args.outdir)
     # make the intermediate folder where the technical files will be saved to
-    try:
-        os.mkdir(path_to_intermediate)
-    except OSError:
-        print('Cannot create intermediate results folder', path_to_intermediate)
-        sys.exit(1)
+    os.mkdir(intermediate_folder)
 
 
 def run_in_parallel(function, params_list, cores):
@@ -76,22 +69,24 @@ def run_in_parallel(function, params_list, cores):
     return returncodes
 
 
-def parse_infile():
+def parse_infile(infile):
     """Parses the BED infile.
     Adds "chr" to the chromosome number if needed, removes duplicate entries.
     Creates a new "clean" BED file for further manipulations.
+
+    Args:
+        infile: Original CNV file submitted by the user.
 
     Returns:
         parsed_list: A list of CNVs in the chr_start_end_type format, for example, chr1_1000_2500_DEL.
 
     """
     parsed_list = set()
-    bed_infile = open(args.infile, 'r')
+    bed_infile = open(infile, 'r')
     parsed_outfile = open(cleaned_bed_path, 'w')
     for line in bed_infile:
         fields = line.strip().split()
         if len(fields) < 4:
-            shutil.rmtree(path_to_results)
             sys.exit("ERROR: the input file must have at least 4 columns")
         # check that the line starts with the chromosome number, skip the line if it does not
         if fields[0][:3] not in ['chr', 'X', 'Y', 'M', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -103,7 +98,6 @@ def parse_infile():
             continue
         # stop execution if the fourth column does not contain the CNV type
         if fields[3] not in ['DEL', 'DUP']:
-            shutil.rmtree(path_to_results)
             sys.exit("ERROR: the 4th column of the input file does not contain the CNV type (DEL/DUP).")
         # each chromosome number should start with 'chr'
         if not fields[0].startswith('chr'):
@@ -138,7 +132,6 @@ def run_bedtools_intersect(file_b_type):
     intersect_proc.wait()
     if not intersect_proc.returncode == 0:
         print("ERROR when running BEDTools on ", file_b_type)
-        shutil.rmtree(path_to_results)
         sys.exit(1)
 
 
@@ -757,7 +750,7 @@ def generate_results():
     and prints full results to file.
 
     """
-    results_out = open(scoresheet, 'w')
+    results_out = open(scoresheet_filename, 'w')
     results_out.write(scoresheet_header + '\n')
     for cnv in sorted(cnv_list):
         # add up individual scores for each element in the rubric to get the final score
@@ -799,36 +792,6 @@ def generate_results():
     results_out.close()
 
 
-def rename_directory():
-    """If a preferred output directory is specified, this function renames the results directory.
-    If the specified directory already exists, result files are copied over and the temporary results
-    directory is deleted.
-
-    Returns:
-        Renames the results directory.
-
-    """
-    new_output_path = os.path.join(home_dir, main_results_folder, args.outdir)
-    # check if the specified directory already exists; if so - copy files over to this directory
-    if os.path.isdir(new_output_path):
-        try:
-            shutil.copyfile(scoresheet, os.path.join(new_output_path, scoresheet_filename))
-        except OSError:
-            print('Incorrect folder name, results are in', path_to_results)
-            sys.exit(1)
-        if os.path.isdir(os.path.join(new_output_path, intermediate_folder)):
-            shutil.rmtree(os.path.join(new_output_path, intermediate_folder))
-        shutil.copytree(path_to_intermediate, os.path.join(new_output_path, intermediate_folder))
-        shutil.rmtree(path_to_results)
-    # if the directory doesn't already exist, rename the temporary directory with user-specified name
-    else:
-        try:
-            os.rename(path_to_results, new_output_path)
-        except OSError:
-            print('Incorrect folder name, results are in', path_to_results)
-            sys.exit(1)
-
-
 if __name__ == "__main__":
     t_start = time.perf_counter()  # time the run
     print(__file__, 'Version', __version__)
@@ -840,8 +803,9 @@ if __name__ == "__main__":
     if args.precise:
         breakpoints = dict()  # stores intragenic CNVs
 
-    make_results_folder()  # create a folder where the results will be stored
-    cnv_list = parse_infile()  # save each CNV as chr_start_end_type and print a new file for BEDTools
+    infile_path = os.path.abspath(args.infile)
+    make_results_folder()  # create a folder where the results will be stored if it doesn't already exist
+    cnv_list = parse_infile(infile_path)  # save each CNV as chr_start_end_type and print a new file for BEDTools
 
     # make empty result dictionaries
     for cnv in cnv_list:
@@ -856,14 +820,7 @@ if __name__ == "__main__":
     # calculate the total score, determine pathogenicity, print results to file
     generate_results()
 
-    # rename the output directory if the user specified a preferred name
-    if args.outdir:
-        rename_directory()
-
     t_stop = time.perf_counter()
     t_fact = t_stop - t_start
-    if args.outdir:
-        print('Results saved to', os.path.join(home_dir, main_results_folder, args.outdir) + '/')
-    else:
-        print('Results saved to', path_to_results + '/')
+    print('Results saved to', args.outdir)
     print('Elapsed time:', '{0:.2f}'.format(t_fact), 'seconds')
