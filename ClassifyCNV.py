@@ -112,6 +112,20 @@ def parse_infile(infile):
     return parsed_list
 
 
+def initialize_cnv_genes(cnv_list):
+    """Creates a dictionary with an empty list of genes for each CNV.
+
+    Args:
+        cnv_list: A list of all CNVs to be analyzed with each CNV in the chr_start_end_type format.
+    Returns:
+        cnv_genes: A dictionary with an empty list for each CNV (to be populated later).
+    """
+    cnv_genes = dict()
+    for cnv in cnv_list:
+        cnv_genes.setdefault(cnv, [])
+    return cnv_genes
+
+
 def run_bedtools_intersect(file_b_type):
     """Runs the BEDTools intersect command.
     Intersects the cleaned BED file that contains CNVs with a database specified in the file_b_type variable.
@@ -798,7 +812,6 @@ if __name__ == "__main__":
 
     # initialize results dictionaries
     detailed_results = dict()  # contains a breakdown of the final pathogenicity score
-    cnv_genes = dict()  # contains a list of protein-coding genes that are included in each CNV
     sensitive_genes = dict()  # contains a list of dosage sensitive genes for each CNV
     if args.precise:
         breakpoints = dict()  # stores intragenic CNVs
@@ -810,7 +823,9 @@ if __name__ == "__main__":
     # make empty result dictionaries
     for cnv in cnv_list:
         detailed_results[cnv] = copy.deepcopy(rubric)
-
+    # initialize the cnv_genes dictionary which will contain a list of protein-coding genes that are included in
+    # each CNV
+    cnv_genes = initialize_cnv_genes(cnv_list)
     # intersect CNVs with genes, promoters, enhancers and assign points for steps 1,3
     genes_promoters_enhancers_intersect()
     # check if CNVs are in dosage sensitive regions and assign points for step 2
