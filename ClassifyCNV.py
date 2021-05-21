@@ -9,7 +9,7 @@ from multiprocessing import Pool
 import time
 
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 parser = argparse.ArgumentParser()
 
