@@ -22,6 +22,7 @@ this order:
 - CNV end position
 - CNV type (DEL or DUP)
 
+CNVs where the start and end positions are the same are not allowed.  
 CNVs on alternative contigs are not evaluated.
 Both hg19 and hg38 coordinates are supported. 
 
